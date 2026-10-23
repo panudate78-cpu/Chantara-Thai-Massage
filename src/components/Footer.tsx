@@ -149,17 +149,26 @@ export default function Footer() {
       </div>
 
       {/* bottom bar */}
-      <div className="border-t border-ivory/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:px-6 sm:text-left lg:px-8">
-          <p className="text-xs text-cream/45">
-            © {year} Chantara Thai Massage · {ADDRESS_LINES.join(", ")}
-          </p>
-          <p className="flex items-center gap-2 text-xs text-cream/45">
-            <img src={logoUrl} alt="" className="h-5 w-5 rounded-full object-contain bg-white/90" aria-hidden="true" />
-            Prices in GBP · Online booking via Picktime
-          </p>
-        </div>
-      </div>
+<div className="flex flex-col items-center gap-2 text-sm text-cream/60 sm:items-end">
+  <div className="flex items-center gap-2">
+    <img
+      src={logoUrl}
+      alt=""
+      className="h-5 w-5 rounded-full object-contain bg-white/90"
+      aria-hidden="true"
+    />
+    <span>Prices in GBP · Online booking via Picktime</span>
+  </div>
+
+  <a
+    href="https://launchpadstudio.uk"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="font-medium text-cream/80 hover:text-white transition-colors"
+  >
+    Website designed and maintained by Launchpad Studio
+  </a>
+</div>
     </footer>
   );
 }
