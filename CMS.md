@@ -82,6 +82,33 @@ adapters (`cms/server/db.ts` Postgres adapter, `cms/server/storage.ts` Blobs
 adapter). Any Postgres + object store can be substituted behind the same
 interfaces.
 
+### Where the data lives
+
+| Layer | Production | Local development |
+| --- | --- | --- |
+| Database | **Postgres** — Netlify Database (Neon-powered, provisioned by Netlify) or any Postgres via `DATABASE_URL` | PGlite (real Postgres compiled to WASM) in `.data/pglite` |
+| Photos | **Netlify Blobs**, store `media` | Files in `.data/media` |
+
+There is no SQLite, no JSON files and no hardcoded content: every editable field
+is a row in Postgres.
+
+**Provisioning.** Netlify Database is a platform primitive, not an extension —
+there is nothing to install from the Extensions marketplace. Because
+`@netlify/database` is a dependency, Netlify creates the database during the
+deploy and injects `NETLIFY_DB_URL`. You can also create it by hand under
+**Data & Storage → Database** in the project. It requires a credit-based plan.
+
+**Migrations.** `netlify/database/migrations/*.sql` follow Netlify's
+`<number>_<slug>.sql` convention and are applied automatically during production
+deploys and deploy previews. As a safety net, `cms/server/migrate.ts` checks for
+the `sites` table on cold start and applies the same statements (generated into
+`cms/server/schema.generated.ts` by `npm run schema:build`) when they are missing.
+That is what makes an external `DATABASE_URL` work with no extra command.
+
+**Diagnosing a connection problem.** `GET /api/health` returns either
+`{"ok":true,"database":"connected"}` or a 503 with a `hint` explaining what to
+fix. The public website keeps serving its launch content during an outage.
+
 ### Data model
 
 | Table | Purpose |
@@ -122,6 +149,19 @@ Prices are stored in pence as integers; the admin UI works in pounds.
 | `POST` | `/api/admin/gallery/reorder` | Reorder |
 | `POST` | `/api/admin/account/password` | Change password |
 | `GET` | `/api/admin/export` | Download a JSON backup |
+
+### Deployment checklist (fresh Netlify account)
+
+1. Deploy the repository (build `npm run build`, publish `dist`).
+2. Database: ensure the site has one — **Data & Storage → Database**. If the
+   project is on a plan without Netlify Database, create a Postgres database at
+   Neon/Supabase and add its connection string as `DATABASE_URL`.
+3. Photos: nothing to do (Netlify Blobs is built in).
+4. Add `CMS_ADMIN_EMAIL`, `CMS_ADMIN_PASSWORD` (12+ characters) and optionally
+   `CMS_ADMIN_NAME`, then trigger a new deploy.
+5. Open `https://<site>/api/health` — expect `"database":"connected"`.
+6. Sign in at `https://<site>/admin` with those credentials, then change the
+   password under **My account**.
 
 ### Security
 
