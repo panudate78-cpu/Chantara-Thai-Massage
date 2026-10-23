@@ -8,7 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "password:hash": "tsx scripts/hash-password.ts"
+    "password:hash": "tsx scripts/hash-password.ts",
+    "schema:build": "node scripts/build-schema.mjs",
+    "predev": "node scripts/build-schema.mjs",
+    "prebuild": "node scripts/build-schema.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.6",

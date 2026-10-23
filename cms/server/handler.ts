@@ -53,7 +53,12 @@ export async function handleRequest(request: Request, deps: CmsDeps): Promise<Re
 
   try {
     if (pathname === "/api/health") {
-      return json({ ok: true, service: "launchpad-cms" });
+      return json({
+        ok: true,
+        service: "launchpad-cms",
+        database: "connected",
+        storage: "netlify-blobs",
+      });
     }
 
     const site = await getSite(deps.db);

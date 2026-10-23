@@ -66,21 +66,41 @@ npm run preview     # Preview the static build (API not included)
 
 1. Import this repository into Netlify (build command `npm run build`, publish
    directory `dist` — already set in `netlify.toml`).
-2. Enable **Netlify Database** for the project (Extensions → Netlify Database).
-   Migrations in `netlify/database/migrations` are applied automatically.
-3. Netlify Blobs is available by default; the CMS stores photos in the `media`
-   store.
+
+2. **Database — nothing to install.** Netlify Database is a platform feature, not
+   an extension: because `@netlify/database` is in `package.json`, Netlify
+   provisions a Postgres database for the site automatically on deploy (it uses
+   the `NETLIFY_DB_URL` variable that Netlify injects). To create or inspect it
+   manually, open the project → **Data & Storage → Database**. Netlify Database
+   requires a credit-based plan; if it is unavailable to you, use option B below.
+
+   - **Option A — Netlify Database (default).** Migrations in
+     `netlify/database/migrations` are applied automatically during each deploy.
+   - **Option B — any Postgres.** Point `DATABASE_URL` at Neon, Supabase, RDS or
+     a self-managed server. The CMS creates its own schema on first request
+     (`ensureSchema`), so no CLI step is needed. Locally the same code path runs
+     against PGlite.
+
+3. **Photos** are stored in Netlify Blobs, which is built in — no extension, no
+   keys, nothing to configure.
+
 4. Set environment variables (Site configuration → Environment variables):
 
    ```
    CMS_ADMIN_EMAIL     = the owner's email address
    CMS_ADMIN_PASSWORD  = a long, unique password (12+ characters)
    CMS_ADMIN_NAME      = optional display name
+   DATABASE_URL        = optional; only for Option B (external Postgres)
    ```
 
-5. Deploy. The first request creates the site record, seeds the launch content
-   once, and creates the owner account. The owner can change their password from
-   **My account** in the admin panel.
+5. Deploy (or **Deploys → Trigger deploy → Deploy site** after adding the
+   variables). Check `https://www.chantarathaimassage.com/api/health` — it returns
+   `{"ok":true,"database":"connected"}` once the database is reachable. If it
+   returns 503, the response body names the exact problem.
+
+6. Sign in at `/admin` with the email and password above. The first request
+   creates the site record, seeds the launch content once, and creates the owner
+   account. The owner can then change the password under **My account**.
 
 No build-time secrets are required and the public site keeps working even if the
 API is briefly unavailable (it renders the same launch content as a fallback).
