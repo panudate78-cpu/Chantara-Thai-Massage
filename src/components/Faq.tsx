@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { BOOKING_URL, GIFT_CARD_URL, PHONE_DISPLAY, PHONE_TEL } from "../data";
+import { BOOKING_URL, GIFT_CARD_URL, fullAddress, telHref, type BusinessDetails } from "../data";
+import { useContent } from "../content/ContentContext";
+import { daysOpenLabel, weeklyHoursLabel } from "../lib/hours";
 import { cn } from "../utils/cn";
 import { Plus } from "./Icons";
 import Reveal from "./Reveal";
 import { BookButton, SectionHeading } from "./ui";
 
-const FAQS: { q: string; a: React.ReactNode }[] = [
+function buildFaqs(business: BusinessDetails): { q: string; a: React.ReactNode }[] {
+  return [
   {
     q: "Where is Chantara Thai Massage in Fulham?",
     a: (
       <>
-        We are at <strong>39 Harwood Road, Fulham, London SW6 4QP</strong> — a calm treatment space
+        We are at <strong>{fullAddress(business)}</strong> — a calm treatment space
         just a <strong>3-minute walk from Fulham Broadway</strong> station (District line). See our{" "}
         <a href="#location" className="font-bold text-forest underline decoration-gold underline-offset-4">
           location, map and parking details
@@ -47,8 +50,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
           Picktime
         </a>
         , or call{" "}
-        <a href={PHONE_TEL} className="font-bold text-forest underline decoration-gold underline-offset-4">
-          {PHONE_DISPLAY}
+        <a href={telHref(business.phone)} className="font-bold text-forest underline decoration-gold underline-offset-4">
+          {business.phone}
         </a>
         . Online bookings require a £10 deposit, deducted from your total.
       </>
@@ -58,8 +61,9 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "What are your opening hours?",
     a: (
       <>
-        We are open <strong>7 days a week</strong>, Monday to Sunday, <strong>10:00 – 20:00</strong>.
-        Last appointments are before closing — check availability when you book.
+        We are open <strong>{daysOpenLabel(business.hours)}</strong> —{" "}
+        <strong>{weeklyHoursLabel(business.hours)}</strong>. Last appointments are before closing —
+        check availability when you book.
       </>
     ),
   },
@@ -68,7 +72,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         Yes — pregnancy massages are available. Please{" "}
-        <a href={PHONE_TEL} className="font-bold text-forest underline decoration-gold underline-offset-4">
+        <a href={telHref(business.phone)} className="font-bold text-forest underline decoration-gold underline-offset-4">
           call us first
         </a>{" "}
         to discuss your stage of pregnancy and the most suitable treatment before booking.
@@ -145,9 +149,12 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       </>
     ),
   },
-];
+  ];
+}
 
 export default function Faq() {
+  const { business } = useContent();
+  const faqs = buildFaqs(business);
   const [open, setOpen] = useState(0);
 
   return (
@@ -171,7 +178,7 @@ export default function Faq() {
 
         <Reveal delay={100}>
           <ul className="mt-12 divide-y divide-ink/10 border-y border-ink/10">
-            {FAQS.map((item, i) => {
+            {faqs.map((item, i) => {
               const isOpen = open === i;
               return (
                 <li key={item.q}>
@@ -230,8 +237,8 @@ export default function Faq() {
               Contact us
             </a>{" "}
             or call{" "}
-            <a href={PHONE_TEL} className="font-bold text-forest underline decoration-gold underline-offset-4">
-              {PHONE_DISPLAY}
+            <a href={telHref(business.phone)} className="font-bold text-forest underline decoration-gold underline-offset-4">
+              {business.phone}
             </a>
             .
           </p>

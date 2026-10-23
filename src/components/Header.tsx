@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { NAV_LINKS, PHONE_DISPLAY, PHONE_TEL } from "../data";
+import { NAV_LINKS, telHref } from "../data";
+import { useContent } from "../content/ContentContext";
 import { cn } from "../utils/cn";
 import { ArrowRight } from "./Icons";
 import Logo from "./Logo";
 import { BookButton } from "./ui";
 
 export default function Header() {
+  const { business } = useContent();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -68,7 +70,7 @@ export default function Header() {
 
           <div className="flex items-center gap-3">
             <a
-              href={PHONE_TEL}
+              href={telHref(business.phone)}
               className="hidden items-center gap-2 text-sm font-bold text-ivory/85 transition-colors hover:text-gold-soft lg:flex"
             >
               <span className="grid h-8 w-8 place-items-center rounded-full border border-ivory/20">
@@ -81,7 +83,7 @@ export default function Header() {
                   />
                 </svg>
               </span>
-              {PHONE_DISPLAY}
+              {business.phone}
             </a>
             <BookButton label="Book Online" size="md" variant="gold" withArrow={false} className="hidden sm:inline-flex" />
 
@@ -142,10 +144,10 @@ export default function Header() {
               <div className="flex flex-col gap-3 pt-4">
                 <BookButton label="Book Online" size="md" variant="gold" className="w-full" />
                 <a
-                  href={PHONE_TEL}
+                  href={telHref(business.phone)}
                   className="text-center text-sm font-bold text-ivory/80 underline decoration-gold-soft/60 underline-offset-4"
                 >
-                  or call {PHONE_DISPLAY}
+                  or call {business.phone}
                 </a>
               </div>
             </nav>

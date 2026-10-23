@@ -1,18 +1,27 @@
 import { useEffect } from "react";
 import {
-  ADDRESS_LINES,
   BOOKING_URL,
-  EMAIL,
   GIFT_CARD_URL,
   GOOGLE_REVIEWS_URL,
-  HOURS,
   REVIEWS,
   SITE_URL,
-  TREATMENTS,
+  addressLines,
+  phoneE164,
 } from "../data";
+import { useContent } from "../content/ContentContext";
+import { daysOpenLabel, weeklyHoursLabel } from "../lib/hours";
+import type { SiteContent } from "../data";
 
-/** Inject JSON-LD structured data into <head> once on mount. */
+/**
+ * Structured data is generated in code from the editable content.
+ *
+ * The business owner can change names, prices and opening hours, but cannot
+ * change the schema types, the canonical URL, the page slug or the sitemap —
+ * that is what keeps the rich results (and search rankings) intact.
+ */
 export default function Seo() {
+  const content = useContent();
+
   useEffect(() => {
     const existing = document.getElementById("chantara-jsonld");
     if (existing) existing.remove();
@@ -20,37 +29,43 @@ export default function Seo() {
     const script = document.createElement("script");
     script.id = "chantara-jsonld";
     script.type = "application/ld+json";
-    script.text = JSON.stringify(buildGraph());
+    script.text = JSON.stringify(buildGraph(content));
     document.head.appendChild(script);
 
     return () => {
       script.remove();
     };
-  }, []);
+  }, [content]);
 
   return null;
 }
 
-function buildGraph() {
-  const telephone = "+44-7387-769945";
-  const streetAddress = "39 Harwood Road";
-  const addressLocality = "Fulham";
-  const addressRegion = "London";
-  const postalCode = "SW6 4QP";
-  const addressCountry = "GB";
+function buildGraph(content: SiteContent) {
+  const { business, treatments } = content;
+  const telephone = phoneE164(business.phone);
+  const lines = addressLines(business);
+  const sameAs = Array.from(
+    new Set(
+      [GOOGLE_REVIEWS_URL, BOOKING_URL, GIFT_CARD_URL, ...Object.values(business.social)].filter(
+        (value): value is string => Boolean(value)
+      )
+    )
+  );
 
-  const openingHoursSpecification = HOURS.map((h) => ({
-    "@type": "OpeningHoursSpecification",
-    dayOfWeek: h.day,
-    opens: h.open,
-    closes: h.close,
-  }));
+  const openingHoursSpecification = business.hours
+    .filter((hours) => !hours.closed)
+    .map((hours) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: hours.day,
+      opens: hours.open,
+      closes: hours.close,
+    }));
 
   const localBusiness = {
     "@type": ["MassageTherapy", "HealthAndBeautyBusiness", "LocalBusiness"],
     "@id": `${SITE_URL}/#business`,
-    name: "Chantara Thai Massage",
-    alternateName: ["Chantara Thai Massage Fulham", "Chantara Thai Massage London"],
+    name: business.name,
+    alternateName: [`${business.name} Fulham`, `${business.name} London`],
     description:
       "Professional traditional Thai massage in Fulham, London. Authentic Thai, deep tissue, Swedish, aromatherapy, hot stone, foot reflexology and head massage near Fulham Broadway station. Open 7 days a week.",
     url: SITE_URL,
@@ -62,24 +77,24 @@ function buildGraph() {
       height: 512,
     },
     telephone,
-    email: EMAIL,
+    email: business.email,
     priceRange: "££",
     currenciesAccepted: "GBP",
     paymentAccepted: "Cash, Credit Card, Debit Card, Visa, Mastercard, American Express, Contactless",
     address: {
       "@type": "PostalAddress",
-      streetAddress,
-      addressLocality,
-      addressRegion,
-      postalCode,
-      addressCountry,
+      streetAddress: lines[0] ?? business.addressLine1,
+      addressLocality: business.addressLine2 || business.city,
+      addressRegion: business.city,
+      postalCode: business.postcode,
+      addressCountry: "GB",
     },
     geo: {
       "@type": "GeoCoordinates",
       latitude: 51.4805,
       longitude: -0.195,
     },
-    hasMap: "https://www.google.com/maps?q=39+Harwood+Road+Fulham+London+SW6+4QP",
+    hasMap: `https://www.google.com/maps?q=${encodeURIComponent(lines.join(", "))}`,
     openingHoursSpecification,
     areaServed: [
       { "@type": "City", name: "Fulham" },
@@ -90,7 +105,7 @@ function buildGraph() {
       { "@type": "Place", name: "Chelsea" },
       { "@type": "Place", name: "Hammersmith" },
     ],
-    sameAs: [GOOGLE_REVIEWS_URL, BOOKING_URL, GIFT_CARD_URL],
+    sameAs,
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -99,29 +114,29 @@ function buildGraph() {
       ratingCount: "60",
       reviewCount: "60",
     },
-    review: REVIEWS.slice(0, 5).map((r) => ({
+    review: REVIEWS.slice(0, 5).map((review) => ({
       "@type": "Review",
-      author: { "@type": "Person", name: r.name },
-      reviewBody: r.text,
+      author: { "@type": "Person", name: review.name },
+      reviewBody: review.text,
       reviewRating: {
         "@type": "Rating",
         ratingValue: "5",
         bestRating: "5",
       },
     })),
-    makesOffer: TREATMENTS.map((t) => ({
+    makesOffer: treatments.map((treatment) => ({
       "@type": "Offer",
-      name: t.title,
-      description: t.description,
+      name: treatment.title,
+      description: treatment.description,
       url: `${SITE_URL}/#treatments`,
       availability: "https://schema.org/InStock",
       priceCurrency: "GBP",
-      price: String(t.prices[0]?.price ?? 0),
+      price: String(treatment.prices[0]?.price ?? 0),
       priceValidUntil: "2027-12-31",
       itemOffered: {
         "@type": "Service",
-        name: t.title,
-        description: t.description,
+        name: treatment.title,
+        description: treatment.description,
         provider: { "@id": `${SITE_URL}/#business` },
         areaServed: "Fulham, London",
         serviceType: "Massage therapy",
@@ -148,7 +163,7 @@ function buildGraph() {
     "@type": "WebSite",
     "@id": `${SITE_URL}/#website`,
     url: SITE_URL,
-    name: "Chantara Thai Massage",
+    name: business.name,
     description: "Traditional Thai massage in Fulham, London SW6 near Fulham Broadway.",
     publisher: { "@id": `${SITE_URL}/#business` },
     inLanguage: "en-GB",
@@ -165,7 +180,7 @@ function buildGraph() {
   const organization = {
     "@type": "Organization",
     "@id": `${SITE_URL}/#organization`,
-    name: "Chantara Thai Massage",
+    name: business.name,
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
     contactPoint: {
@@ -177,11 +192,11 @@ function buildGraph() {
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress,
-      addressLocality,
-      addressRegion,
-      postalCode,
-      addressCountry,
+      streetAddress: lines[0] ?? business.addressLine1,
+      addressLocality: business.addressLine2 || business.city,
+      addressRegion: business.city,
+      postalCode: business.postcode,
+      addressCountry: "GB",
     },
   };
 
@@ -206,12 +221,7 @@ function buildGraph() {
     "@type": "BreadcrumbList",
     "@id": `${SITE_URL}/#breadcrumb`,
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE_URL,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
       {
         "@type": "ListItem",
         position: 2,
@@ -230,18 +240,8 @@ function buildGraph() {
         name: "Location & Hours",
         item: `${SITE_URL}/#location`,
       },
-      {
-        "@type": "ListItem",
-        position: 5,
-        name: "Contact",
-        item: `${SITE_URL}/#contact`,
-      },
-      {
-        "@type": "ListItem",
-        position: 6,
-        name: "FAQ",
-        item: `${SITE_URL}/#faq`,
-      },
+      { "@type": "ListItem", position: 5, name: "Contact", item: `${SITE_URL}/#contact` },
+      { "@type": "ListItem", position: 6, name: "FAQ", item: `${SITE_URL}/#faq` },
     ],
   };
 
@@ -254,7 +254,7 @@ function buildGraph() {
         name: "Where is Chantara Thai Massage located?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Chantara Thai Massage is at ${ADDRESS_LINES.join(", ")}. We are a 3-minute walk from Fulham Broadway underground station on the District line.`,
+          text: `${business.name} is at ${lines.join(", ")}. We are a 3-minute walk from Fulham Broadway underground station on the District line.`,
         },
       },
       {
@@ -262,7 +262,7 @@ function buildGraph() {
         name: "What are your opening hours?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "We are open 7 days a week, Monday to Sunday, from 10:00 to 20:00.",
+          text: `${daysOpenLabel(business.hours)}. ${weeklyHoursLabel(business.hours)}.`,
         },
       },
       {
@@ -270,7 +270,7 @@ function buildGraph() {
         name: "How do I book a Thai massage in Fulham?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `You can book online via Picktime at ${BOOKING_URL}, or call us on 07387 769945. A £10 deposit is required for online bookings and is deducted from your total.`,
+          text: `You can book online via Picktime at ${BOOKING_URL}, or call us on ${business.phone}. A £10 deposit is required for online bookings and is deducted from your total.`,
         },
       },
       {
@@ -278,7 +278,9 @@ function buildGraph() {
         name: "What types of massage do you offer?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "We offer Traditional Thai Massage, Deep Tissue, Swedish, Aromatherapy (Oil), Hot Stone, Back Neck & Shoulders, Foot Reflexology, Head Massage, Couples Massage and combo packages.",
+          text: `We offer ${treatments
+            .map((treatment) => treatment.title)
+            .join(", ")}, Couples Massage and combo packages.`,
         },
       },
       {
@@ -286,7 +288,7 @@ function buildGraph() {
         name: "Do you offer pregnancy massage?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, pregnancy massages are available. Please call us first to discuss your stage of pregnancy and the most suitable treatment before booking.",
+          text: `Yes, pregnancy massages are available. Please call ${business.phone} first to discuss your stage of pregnancy and the most suitable treatment before booking.`,
         },
       },
       {
@@ -302,7 +304,7 @@ function buildGraph() {
         name: "Can I buy a gift voucher for a massage?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Yes. Gift vouchers can be purchased online and are only valid when booking directly by phone, WhatsApp or SMS — not via Picktime online bookings.`,
+          text: "Yes. Gift vouchers can be purchased online and are only valid when booking directly by phone, WhatsApp or SMS — not via Picktime online bookings.",
         },
       },
       {
@@ -321,3 +323,4 @@ function buildGraph() {
     "@graph": [organization, localBusiness, website, webPage, breadcrumb, faqPage],
   };
 }
+

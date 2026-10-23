@@ -100,7 +100,7 @@ Secondary: deep tissue Fulham, Swedish massage SW6, hot stone Fulham, reflexolog
 - Lazy-load non-critical images
 - `theme-color` for mobile UI
 
-**Post-deploy:** run PageSpeed Insights / Lighthouse on the live URL and address any host-level caching (Vercel CDN handles most of this).
+**Post-deploy:** run PageSpeed Insights / Lighthouse on the live URL and address any host-level caching (Netlify’s CDN handles most of this).
 
 ---
 
@@ -173,7 +173,7 @@ This project is **Vite + React**, not Next.js. Equivalents applied:
 7. **Review schema volume** — add more real reviews over time as they accumulate.
 8. **Multi-page routes** (optional future) — `/treatments`, `/location` as real routes if you outgrow the SPA for deeper ranking pages.
 9. **Analytics** — GA4 + conversion events on Book / Call / Voucher clicks.
-10. **After first Vercel deploy** — replace any placeholder domain in Search Console and re-test Rich Results.
+10. **After the first Netlify deploy** — replace any placeholder domain in Search Console and re-test Rich Results.
 
 ---
 
@@ -182,7 +182,7 @@ This project is **Vite + React**, not Next.js. Equivalents applied:
 ```bash
 npm install
 npm run build
-# push to GitHub → Vercel auto-deploy
+# push to GitHub → Netlify auto-deploy
 ```
 
 After live:

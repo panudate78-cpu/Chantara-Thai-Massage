@@ -1,10 +1,19 @@
-import { HERO_IMAGE, PHONE_DISPLAY, PHONE_TEL } from "../data";
+import { HERO_IMAGE, resolveCtaHref, telHref } from "../data";
+import { useContent } from "../content/ContentContext";
+import { todayHours, weeklyHoursLabel } from "../lib/hours";
 import { ArrowRight, Clock, Star, SpinningSeal } from "./Icons";
 import { BookButton } from "./ui";
 
 const delay = (ms: number) => ({ animationDelay: `${ms}ms` });
 
 export default function Hero() {
+  const { business, homepage } = useContent();
+  const headingLines = homepage.heroHeading.split("\n").filter(Boolean).slice(0, 2);
+  const primaryHref = resolveCtaHref(homepage.ctaPrimary.destination, business);
+  const secondaryHref = resolveCtaHref(homepage.ctaSecondary.destination, business);
+  const today = todayHours(business.hours);
+  const openCount = business.hours.filter((entry) => !entry.closed).length;
+
   return (
     <section id="home" className="pattern-dots relative overflow-hidden bg-cream pt-[7.25rem]">
       {/* soft gold wash top-right */}
@@ -21,19 +30,18 @@ export default function Hero() {
             style={delay(150)}
           >
             <span className="h-px w-10 bg-gold/70" aria-hidden="true" />
-            Fulham Broadway · London SW6
+            {homepage.heroEyebrow}
           </p>
 
           <h1 className="mt-6 font-display text-[2.9rem] font-medium leading-[1.04] text-forest-deep sm:text-6xl lg:text-[4.5rem]">
+            {headingLines.map((line, index) => (
+              <span className="mask-line" key={`${line}-${index}`}>
+                <span style={delay(200 + index * 130)}>{line}</span>
+              </span>
+            ))}
             <span className="mask-line">
-              <span style={delay(200)}>Thai Massage</span>
-            </span>
-            <span className="mask-line">
-              <span style={delay(330)}>in Fulham,</span>
-            </span>
-            <span className="mask-line">
-              <span style={delay(460)} className="italic text-gold">
-                London
+              <span style={delay(200 + headingLines.length * 130)} className="italic text-gold">
+                {homepage.heroHeadingAccent}
               </span>
             </span>
           </h1>
@@ -42,21 +50,24 @@ export default function Hero() {
             className="soft-in mt-6 max-w-md text-lg leading-relaxed text-ink/70"
             style={delay(600)}
           >
-            Professional traditional Thai massage near Fulham Broadway — authentic relaxing and
-            therapeutic treatments tailored to your needs, in a calm sanctuary a few steps from the station.
+            {homepage.heroDescription}
           </p>
 
           <div className="soft-in mt-9 flex flex-wrap items-center gap-5" style={delay(720)}>
-            <BookButton label="Book an Appointment" size="lg" />
-            <a
-              href="#treatments"
-              className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-forest transition-colors hover:text-gold"
-            >
-              Treatments &amp; Prices
-              <span className="grid h-9 w-9 place-items-center rounded-full border border-forest/25 transition-all duration-300 group-hover:border-gold group-hover:bg-gold/10">
-                <ArrowRight className="h-3.5 w-3.5 rotate-90" />
-              </span>
-            </a>
+            {homepage.ctaPrimary.label && primaryHref && (
+              <BookButton label={homepage.ctaPrimary.label} href={primaryHref} size="lg" />
+            )}
+            {homepage.ctaSecondary.label && secondaryHref && (
+              <a
+                href={secondaryHref}
+                className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-forest transition-colors hover:text-gold"
+              >
+                {homepage.ctaSecondary.label}
+                <span className="grid h-9 w-9 place-items-center rounded-full border border-forest/25 transition-all duration-300 group-hover:border-gold group-hover:bg-gold/10">
+                  <ArrowRight className="h-3.5 w-3.5 rotate-90" />
+                </span>
+              </a>
+            )}
           </div>
 
           {/* trust row */}
@@ -82,12 +93,13 @@ export default function Hero() {
               <dt className="sr-only">Opening days</dt>
               <dd>
                 <span className="flex items-center gap-1.5 font-display text-2xl font-semibold text-forest-deep">
-                  7<span className="text-gold"> days</span>
+                  {openCount}
+                  <span className="text-gold"> {openCount === 1 ? "day" : "days"}</span>
                 </span>
                 <span className="mt-1 block text-[11px] font-semibold uppercase tracking-[0.14em] text-clay">
                   Open weekly
                   <br />
-                  10 – 20
+                  {weeklyHoursLabel(business.hours)}
                 </span>
               </dd>
             </div>
@@ -107,7 +119,7 @@ export default function Hero() {
           </dl>
 
           <a
-  href={PHONE_TEL}
+  href={telHref(business.phone)}
   className="soft-in mt-10 inline-flex items-center gap-4 text-xl font-bold text-forest transition-colors hover:text-gold"
   style={delay(920)}
 >
@@ -129,7 +141,7 @@ export default function Hero() {
 
   <span>
     Prefer to speak first? Call{" "}
-    <span className="text-gold">{PHONE_DISPLAY}</span>
+    <span className="text-gold">{business.phone}</span>
   </span>
 </a>
         </div>
@@ -169,9 +181,9 @@ export default function Hero() {
     aria-hidden="true"
   />
   <span className="text-lg font-bold uppercase leading-tight tracking-[0.2em]">
-    Open today
+    {today && !today.closed ? "Open today" : "Closed today"}
     <span className="block font-display text-2xl normal-case tracking-normal text-gold-soft">
-      10:00 — 20:00
+      {today && !today.closed ? `${today.open} — ${today.close}` : "Online bookings welcome"}
     </span>
   </span>
 </div>

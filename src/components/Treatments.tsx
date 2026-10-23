@@ -1,4 +1,5 @@
-import { COMBOS, TREATMENTS, type Combo, type PricePoint, type Treatment } from "../data";
+import { COMBOS, DEFAULT_TREATMENT_IMAGE, type Combo, type PricePoint, type TreatmentContent } from "../data";
+import { useContent } from "../content/ContentContext";
 import Reveal from "./Reveal";
 import { BookButton, SectionHeading } from "./ui";
 
@@ -16,14 +17,17 @@ function PriceRow({ point, dark = false }: { point: PricePoint; dark?: boolean }
   );
 }
 
-function TreatmentCard({ treatment, index }: { treatment: Treatment; index: number }) {
+function TreatmentCard({ treatment, index }: { treatment: TreatmentContent; index: number }) {
   return (
     <Reveal delay={(index % 3) * 110} className="h-full">
-      <article className="group flex h-full flex-col border border-ink/10 bg-ivory transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_26px_50px_-28px_rgba(19,40,30,0.4)]">
+      <article
+        id={`treatment-${treatment.slug}`}
+        className="group flex h-full flex-col border border-ink/10 bg-ivory transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/60 hover:shadow-[0_26px_50px_-28px_rgba(19,40,30,0.4)]"
+      >
         <div className="relative overflow-hidden">
           <img
-            src={treatment.image}
-            alt={treatment.alt}
+            src={treatment.imageUrl ?? DEFAULT_TREATMENT_IMAGE}
+            alt={treatment.imageAlt ?? `${treatment.title} at Chantara Thai Massage, Fulham, London`}
             loading="lazy"
             width={940}
             height={650}
@@ -84,6 +88,8 @@ function ComboRow({ combo, index }: { combo: Combo; index: number }) {
 }
 
 export default function Treatments() {
+  const { treatments } = useContent();
+
   return (
     <section id="treatments" className="pattern-dots relative bg-cream py-20 lg:py-28" aria-labelledby="treatments-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -100,7 +106,7 @@ export default function Treatments() {
 
         {/* main treatments */}
         <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {TREATMENTS.map((t, i) => (
+          {treatments.map((t, i) => (
             <TreatmentCard key={t.id} treatment={t} index={i} />
           ))}
 

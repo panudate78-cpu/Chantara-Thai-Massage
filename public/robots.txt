@@ -2,6 +2,11 @@
 User-agent: *
 Allow: /
 
+# Private admin panel and API — never indexed.
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
 # Sitemaps
 Sitemap: https://www.chantarathaimassage.com/sitemap.xml
 
