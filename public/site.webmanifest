@@ -1,0 +1,18 @@
+{
+  "name": "Chantara Thai Massage — Fulham, London",
+  "short_name": "Chantara Thai",
+  "description": "Authentic traditional Thai massage in Fulham, London near Fulham Broadway. Open 7 days a week.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4edde",
+  "theme_color": "#1e3a2c",
+  "lang": "en-GB",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
