@@ -1,8 +1,10 @@
+import { BOOKING_URL } from "../data";
 import { cn } from "../utils/cn";
 import { ArrowRight, Lotus } from "./Icons";
 
 type BookButtonProps = {
   label?: string;
+  href?: string;
   variant?: "forest" | "gold" | "ivory" | "outline";
   size?: "md" | "lg" | "sm";
   className?: string;
@@ -12,16 +14,18 @@ type BookButtonProps = {
 /** Every booking CTA on the site points straight at Picktime. */
 export function BookButton({
   label = "Book Now",
+  href = BOOKING_URL,
   variant = "forest",
   size = "md",
   className,
   withArrow = true,
 }: BookButtonProps) {
+  const external = /^https?:/i.test(href);
   return (
     <a
-      href="https://www.picktime.com/Chantarathaimassage"
-      target="_blank"
-      rel="noopener noreferrer"
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
       className={cn(
         "group inline-flex items-center justify-center gap-2.5 rounded-[3px] font-sans font-bold uppercase tracking-[0.14em] transition-all duration-300",
         size === "lg" && "px-8 py-4 text-[13px]",

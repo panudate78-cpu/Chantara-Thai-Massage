@@ -1,9 +1,13 @@
-import { EMAIL, PHONE_DISPLAY, PHONE_TEL } from "../data";
+import { telHref } from "../data";
+import { useContent } from "../content/ContentContext";
+import { daysOpenLabel, weeklyHoursLabel } from "../lib/hours";
 import { Mail, Phone } from "./Icons";
 import Reveal from "./Reveal";
 import { BookButton, SectionHeading } from "./ui";
 
 export default function Contact() {
+  const { business } = useContent();
+
   return (
     <section
       id="contact"
@@ -32,7 +36,7 @@ export default function Contact() {
         <div className="grid gap-5 sm:grid-cols-2">
           <Reveal delay={120} className="h-full">
             <a
-              href={PHONE_TEL}
+              href={telHref(business.phone)}
               className="group flex h-full flex-col border border-ivory/15 bg-forest-deep/60 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gold-soft/60"
             >
               <span className="grid h-12 w-12 place-items-center rounded-full border border-gold-soft/40 text-gold-soft transition-colors duration-300 group-hover:bg-gold-soft group-hover:text-forest-deep">
@@ -42,16 +46,16 @@ export default function Contact() {
                 Call us
               </span>
               <span className="mt-2 font-display text-3xl font-semibold tracking-wide text-ivory">
-                {PHONE_DISPLAY}
+                {business.phone}
               </span>
               <span className="mt-auto pt-4 text-xs text-cream/50">
-                Open 7 days a week, 10:00 – 20:00
+                {daysOpenLabel(business.hours)} · {weeklyHoursLabel(business.hours)}
               </span>
             </a>
           </Reveal>
           <Reveal delay={220} className="h-full">
             <a
-              href={`mailto:${EMAIL}`}
+              href={`mailto:${business.email}`}
               className="group flex h-full flex-col border border-ivory/15 bg-forest-deep/60 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gold-soft/60"
             >
               <span className="grid h-12 w-12 place-items-center rounded-full border border-gold-soft/40 text-gold-soft transition-colors duration-300 group-hover:bg-gold-soft group-hover:text-forest-deep">
@@ -61,7 +65,7 @@ export default function Contact() {
                 Email us
               </span>
               <span className="mt-2 whitespace-nowrap font-display text-base font-semibold tracking-normal text-ivory sm:text-lg">
-                {EMAIL}
+                {business.email}
               </span>
               <span className="mt-auto pt-4 text-xs text-cream/50">
                 We reply within one working day

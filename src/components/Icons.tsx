@@ -229,3 +229,54 @@ export function SpinningSeal({ className = "" }: IconProps) {
     </div>
   );
 }
+
+export function Instagram({ className = "" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function Facebook({ className = "" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M13.5 21v-7.2h2.6l.4-3h-3V8.9c0-.9.3-1.5 1.6-1.5h1.5V4.7c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4v2.2H7.5v3h2.7V21h3.3Z" />
+    </svg>
+  );
+}
+
+export function WhatsApp({ className = "" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M20.2 11.7a8.2 8.2 0 0 1-12.2 7.2L3.8 20l1.2-4.1a8.2 8.2 0 1 1 15.2-4.2Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.2 8.1c.2-.5.5-.5.7-.5h.5c.2 0 .3.1.5.4l.7 1.6c.1.2 0 .4-.1.5l-.5.6c-.1.2-.2.3 0 .6.3.5.7 1 1.1 1.3.4.3.8.5 1.1.7.2.1.4.1.5 0l.7-.7c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.5v.5c-.1.4-.5 1.2-1.5 1.4-1 .2-2.3-.2-3.9-1.4-1.6-1.2-2.6-2.7-2.8-3.8-.2-1 0-1.7.4-2.2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function TikTok({ className = "" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M14.6 3h2.6c.2 1.2.8 2.3 1.8 3 .9.7 1.9 1 3 1v2.7c-1.6 0-3.1-.5-4.4-1.4v6.1a5.5 5.5 0 1 1-5.5-5.5c.3 0 .6 0 .9.1v2.8a2.7 2.7 0 1 0 1.9 2.6V3Z" />
+    </svg>
+  );
+}
+
+export function Sparkle({ className = "" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12 2.5c.5 4.4 3.1 7 7.5 7.5-4.4.5-7 3.1-7.5 7.5-.5-4.4-3.1-7-7.5-7.5 4.4-.5 7-3.1 7.5-7.5Z" />
+    </svg>
+  );
+}

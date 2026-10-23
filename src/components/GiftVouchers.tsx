@@ -1,9 +1,12 @@
-import { GIFT_CARD_URL, PHONE_DISPLAY, PHONE_TEL } from "../data";
+import { GIFT_CARD_URL, telHref } from "../data";
+import { useContent } from "../content/ContentContext";
 import { ArrowRight, Gift, Phone } from "./Icons";
 import Reveal from "./Reveal";
 import { SectionHeading } from "./ui";
 
 export default function GiftVouchers() {
+  const { business } = useContent();
+
   return (
     <section
       id="gift-vouchers"
@@ -61,11 +64,11 @@ export default function GiftVouchers() {
                   After purchasing, book your treatment directly with us — not via Picktime.
                 </p>
                 <a
-                  href={PHONE_TEL}
+                  href={telHref(business.phone)}
                   className="inline-flex items-center gap-2 text-sm font-bold text-gold-soft transition-colors hover:text-ivory"
                 >
                   <Phone className="h-4 w-4" />
-                  Call {PHONE_DISPLAY} to redeem
+                  Call {business.phone} to redeem
                 </a>
               </div>
             </div>
