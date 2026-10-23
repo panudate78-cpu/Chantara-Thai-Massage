@@ -105,12 +105,18 @@ export default function Treatments() {
         </Reveal>
 
         {/* main treatments */}
-        <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {treatments.map((t, i) => (
-            <TreatmentCard key={t.id} treatment={t} index={i} />
-          ))}
-
-        </div>
+        {treatments.length > 0 ? (
+          <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {treatments.map((t, i) => (
+              <TreatmentCard key={t.id} treatment={t} index={i} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-14 border border-ink/10 bg-ivory px-6 py-12 text-center text-sm leading-relaxed text-ink/60">
+            Our treatment menu is being refreshed. Please call us or book online and we will
+            confirm the latest treatments and prices for your visit.
+          </p>
+        )}
 
         {/* ladies' day promotion — centred full-width band */}
         <Reveal delay={220} className="mt-10">

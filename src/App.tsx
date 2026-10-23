@@ -21,37 +21,37 @@ export default function App() {
   return (
     <ContentProvider>
       <div className="relative min-h-screen bg-cream">
-      <Seo />
-      {/* film grain texture over everything */}
-      <div className="grain" aria-hidden="true" />
+        <Seo />
+        {/* film grain texture over everything */}
+        <div className="grain" aria-hidden="true" />
 
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:bg-forest focus:px-5 focus:py-3 focus:text-sm focus:font-bold focus:text-ivory"
-      >
-        Skip to main content
-      </a>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:bg-forest focus:px-5 focus:py-3 focus:text-sm focus:font-bold focus:text-ivory"
+        >
+          Skip to main content
+        </a>
 
-      <Header />
-      <Breadcrumbs />
+        <Header />
+        <Breadcrumbs />
 
-      <main id="main-content">
-        <Hero />
-        <Marquee />
-        <About />
-        <Gallery />
-        <Treatments />
-        <Offers />
-        <GiftVouchers />
-        <BookingPolicy />
-        <Terms />
-        <Reviews />
-        <Faq />
-        <Location />
-        <Contact />
-      </main>
+        <main id="main-content">
+          <Hero />
+          <Marquee />
+          <About />
+          <Gallery />
+          <Treatments />
+          <Offers />
+          <GiftVouchers />
+          <BookingPolicy />
+          <Terms />
+          <Reviews />
+          <Faq />
+          <Location />
+          <Contact />
+        </main>
 
-      <Footer />
+        <Footer />
       </div>
     </ContentProvider>
   );
